@@ -79,6 +79,8 @@ RUN \
 RUN \
     groupadd me && \
     useradd -g me -s /usr/bin/zsh -m me && \
+    passwd -d me && \
+    adduser me sudo && \
     :
 
 RUN \
