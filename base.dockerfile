@@ -27,6 +27,7 @@
 #   
 #   WORKDIR someproject
 
+# Noble is 24.04
 FROM ubuntu:noble
 
 ARG APT_INSTALL="apt-get install -y --no-install-recommends"
@@ -60,12 +61,23 @@ RUN \
     dpkg-reconfigure tzdata && \
     :
 
+ARG PYTHON_VERSIONS="9 10 11 12 13"
 RUN \
     add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && \
-    for v in 9 10 11 12 13; do \
+    for v in $PYTHON_VERSIONS; do \
         $APT_INSTALL python3.$v python3.$v-dev python3.$v-venv; \
     done && \
+    :
+
+ARG PYPY_VERSION=7.3.20
+ARG PYPY_PYTHON_VERSION=3.11
+ARG PYPY_ARCH=aarch64
+RUN \
+    cd /usr/local && \
+    curl -fsSL https://downloads.python.org/pypy/pypy${PYPY_PYTHON_VERSION}-v${PYPY_VERSION}-${PYPY_ARCH}.tar.bz2 | tar -xvjpf - && \
+    ln -s /usr/local/pypy${PYPY_PYTHON_VERSION}-v${PYPY_VERSION}-${PYPY_ARCH}/bin/pypy3 /usr/local/bin/pypy3 && \
+    ln -s /usr/local/pypy${PYPY_PYTHON_VERSION}-v${PYPY_VERSION}-${PYPY_ARCH}/bin/pypy3 /usr/local/bin/pypy${PYPY_PYTHON_VERSION} && \
     :
 
 # This makes the image smaller, but also means you can't install more stuff
